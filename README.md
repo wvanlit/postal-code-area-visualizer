@@ -25,3 +25,7 @@ This is a simple web application that visualizes the postal code ranges of a giv
 - [ ] Offload heavy calculations to a service worker to not block the UI
 - [ ] Cache GeoJSON data locally to avoid fetching it every time
 - [ ] Turn into a standalone component that can be easily integrated into other projects
+
+## Development
+
+Uses Git LFS for storing GeoJSON files. Make sure to install it from [here](https://git-lfs.com/) before cloning the repository.
