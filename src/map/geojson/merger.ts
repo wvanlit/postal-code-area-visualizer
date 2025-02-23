@@ -1,6 +1,6 @@
 import union from "@turf/union";
 import { polygon, featureCollection } from "@turf/helpers";
-import { Feature, parseFeature } from "./lib";
+import { Feature, parseFeature } from "./types";
 
 /**
  * Merge all polygon features into a single polygon feature.
@@ -25,9 +25,7 @@ export function mergePolygonsFromGeoJSON(features: Feature[]): Feature {
     }
 
     if (feature.geometry.type === "MultiPolygon") {
-      const multi = feature.geometry.coordinates.map((coords) =>
-        polygon(coords)
-      );
+      const multi = feature.geometry.coordinates.map((coords) => polygon(coords));
 
       return multi;
     }

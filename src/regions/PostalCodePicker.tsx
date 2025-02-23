@@ -1,15 +1,5 @@
-import {
-  Button,
-  Grid,
-  Group,
-  Select,
-  Stack,
-  Text,
-  TextInput,
-} from "@mantine/core";
+import { Button, Grid, Group, Select, Stack, Text, TextInput } from "@mantine/core";
 import { useState } from "react";
-import { GeoJSONProvider } from "./geojson/providers";
-import { Feature } from "./geojson/lib";
 
 export type Country = "NL" | "BE" | "DE";
 
@@ -18,13 +8,11 @@ export type PostalCodeRange = {
   start: string;
   end: string;
   countryCode: Country;
-  feature: Feature;
 };
 
 type PostalCodePickerProps = {
   ranges: PostalCodeRange[];
   onChange: (postalCodeRanges: PostalCodeRange[]) => void;
-  provider: GeoJSONProvider;
 };
 
 type CountrySelectorProps = {
@@ -71,24 +59,13 @@ function PostalCodeRangeForm(props: PostalCodeRangeFormProps) {
     start: "",
     end: "",
     countryCode: "NL",
-    feature: {} as Feature,
   });
 
   return (
     <Group>
-      <CountrySelector
-        onChange={(country) =>
-          setCurrentRange({ ...currentRange, countryCode: country })
-        }
-      />
-      <PostalCodeInput
-        value={currentRange.start}
-        onChange={(start) => setCurrentRange({ ...currentRange, start })}
-      />
-      <PostalCodeInput
-        value={currentRange.end}
-        onChange={(end) => setCurrentRange({ ...currentRange, end })}
-      />
+      <CountrySelector onChange={(country) => setCurrentRange({ ...currentRange, countryCode: country })} />
+      <PostalCodeInput value={currentRange.start} onChange={(start) => setCurrentRange({ ...currentRange, start })} />
+      <PostalCodeInput value={currentRange.end} onChange={(end) => setCurrentRange({ ...currentRange, end })} />
       <Button
         onClick={() => {
           props.onSubmit(currentRange);
@@ -97,7 +74,6 @@ function PostalCodeRangeForm(props: PostalCodeRangeFormProps) {
             start: "",
             end: "",
             countryCode: currentRange.countryCode,
-            feature: {} as Feature,
           });
         }}
       >
@@ -107,19 +83,8 @@ function PostalCodeRangeForm(props: PostalCodeRangeFormProps) {
   );
 }
 
-function PostalCodePicker({
-  onChange,
-  ranges,
-  provider,
-}: PostalCodePickerProps) {
+function PostalCodePicker({ onChange, ranges }: PostalCodePickerProps) {
   function onSubmit(range: PostalCodeRange) {
-    // Find polygon for the postal code range
-    range.feature = provider.getFeature(
-      range.countryCode,
-      range.start,
-      range.end
-    )!;
-
     range.id = `PCR:${range?.countryCode}:${range?.start}-${range?.end}`;
 
     onChange([...ranges, range]);

@@ -1,21 +1,29 @@
-import { useState, useEffect } from "react";
-import Map from "./Map";
-import { AppShell, Loader, Stack, Title, Text } from "@mantine/core";
-import PostalCodePicker, { PostalCodeRange } from "./PostalCodePicker";
-import { createProvider } from "./geojson/loader";
-import { GeoJSONProvider } from "./geojson/providers";
+import { useState } from "react";
+import { AppShell, Title } from "@mantine/core";
+import PostalCodePicker, { PostalCodeRange } from "./regions/PostalCodePicker";
+import RegionMap from "./map/RegionMap";
 
 function App() {
-  const [postalCodeRanges, setPostalCodeRanges] = useState<PostalCodeRange[]>(
-    []
-  );
-  const [provider, setProvider] = useState<GeoJSONProvider | null>(null);
-
-  useEffect(() => {
-    createProvider()
-      .then(setProvider)
-      .then(() => console.log("Provider loaded"));
-  }, []);
+  const [postalCodeRanges, setPostalCodeRanges] = useState<PostalCodeRange[]>([
+    {
+      id: "pcr:3000:3100:NL",
+      start: "3000",
+      end: "3100",
+      countryCode: "NL",
+    },
+    {
+      id: "pcr:1000:2000:BE",
+      start: "1000",
+      end: "2000",
+      countryCode: "BE",
+    },
+    {
+      id: "pcr:10000:20000:DE",
+      start: "10000",
+      end: "20000",
+      countryCode: "DE",
+    },
+  ]);
 
   return (
     <AppShell header={{ height: 60 }} padding="md">
@@ -26,23 +34,14 @@ function App() {
       </AppShell.Header>
 
       <AppShell.Main>
-        <Map ranges={postalCodeRanges} />
-        {provider ? (
-          <PostalCodePicker
-            ranges={postalCodeRanges}
-            onChange={(pcrs) => setPostalCodeRanges([...pcrs])}
-            provider={provider}
-          />
-        ) : (
-          <Stack
-            align="center"
-            justify="center"
-            style={{ height: "30vh", width: "100%" }}
-          >
-            <Loader />
-            <Text>Loading GeoJSON...</Text>
-          </Stack>
-        )}
+        <RegionMap
+          regions={postalCodeRanges}
+          style={{
+            height: "50vh",
+            width: "100%",
+          }}
+        />
+        <PostalCodePicker ranges={postalCodeRanges} onChange={(pcrs) => setPostalCodeRanges([...pcrs])} />
       </AppShell.Main>
     </AppShell>
   );

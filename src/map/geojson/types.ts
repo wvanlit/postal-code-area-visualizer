@@ -1,9 +1,10 @@
-// geojson-parser.ts
 import { z } from "zod";
 
 const PointSchema = z.union([
   z.tuple([z.number(), z.number()]),
   z.tuple([z.number(), z.number(), z.number()]),
+  // TODO: Change 3D points to 2D for now, as we don't use the altitude.
+  // .transform(([lat, lng, _]) => [lat, lng]),
 ]);
 
 const GeometrySchema = z.discriminatedUnion("type", [
@@ -17,20 +18,17 @@ const GeometrySchema = z.discriminatedUnion("type", [
   }),
 ]);
 
-// Define the Feature schema.
 const FeatureSchema = z.object({
   type: z.literal("Feature"),
   geometry: GeometrySchema.nullable(), // geometry can be null
   properties: z.record(z.any()).nullable().optional(),
 });
 
-// Define the FeatureCollection schema.
-export const FeatureCollectionSchema = z.object({
+const FeatureCollectionSchema = z.object({
   type: z.literal("FeatureCollection"),
   features: z.array(FeatureSchema),
 });
 
-// Export TypeScript types inferred from the schemas.
 export type Point = z.infer<typeof PointSchema>;
 export type Geometry = z.infer<typeof GeometrySchema>;
 export type Polygon = z.infer<typeof GeometrySchema>["coordinates"][0];
@@ -38,13 +36,6 @@ export type MultiPolygon = z.infer<typeof GeometrySchema>["coordinates"];
 export type Feature = z.infer<typeof FeatureSchema>;
 export type FeatureCollection = z.infer<typeof FeatureCollectionSchema>;
 
-/**
- * Parses an unknown value into a valid FeatureCollection.
- * Throws an error if the provided data does not match the GeoJSON schema.
- *
- * @param data - The unknown input to parse as a FeatureCollection.
- * @returns A validated FeatureCollection.
- */
 export function parseFeatureCollection(data: unknown): FeatureCollection {
   return FeatureCollectionSchema.parse(data);
 }
@@ -52,3 +43,21 @@ export function parseFeatureCollection(data: unknown): FeatureCollection {
 export function parseFeature(data: unknown): Feature {
   return FeatureSchema.parse(data);
 }
+
+const PostalCodeSchema = z.string().regex(/^(\d{4}|\d{5})$/);
+const CountryCodeSchema = z.string().length(2);
+
+export function parsePostalCode(data: string): PostalCode {
+  return PostalCodeSchema.parse(data);
+}
+
+export function parseCountryCode(data: string): CountryCode {
+  return CountryCodeSchema.parse(data);
+}
+
+export type PostalCode = z.infer<typeof PostalCodeSchema>;
+export type CountryCode = z.infer<typeof CountryCodeSchema>;
+
+export type CountryPostalCodeLookup = Record<PostalCode, Feature | undefined>;
+export type CountryPostalCodeLookups = Record<CountryCode, CountryPostalCodeLookup>;
+export type CountryPostalCodeLookupProvider = (features: Feature[]) => CountryPostalCodeLookup;

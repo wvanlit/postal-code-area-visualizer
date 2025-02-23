@@ -20,11 +20,12 @@ This is a simple web application that visualizes the postal code ranges of a giv
 
 ## Improvements
 
+- [x] Offload heavy calculations to a service worker to not block the UI
+- [x] Separate the map into a copyable library folder in `src/map`
 - [ ] Add better postal code picker
 - [ ] Add region selection based on other GeoJSON properties
-- [ ] Offload heavy calculations to a service worker to not block the UI
 - [ ] Cache GeoJSON data locally to avoid fetching it every time
-- [ ] Turn into a standalone component that can be easily integrated into other projects
+- [ ] Get rid of Turf.js dependency by writing custom unioning logic
 
 ## Development
 
